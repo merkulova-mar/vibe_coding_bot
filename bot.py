@@ -3,6 +3,7 @@ from aiogram import Bot, Dispatcher, types
 import pymorphy2
 import asyncio
 import os
+from aiogram.filters import Command
 
 # Получаем токен из переменной окружения
 API_TOKEN = os.getenv("API_TOKEN")
@@ -36,7 +37,7 @@ for person, words in KEYWORDS.items():
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-@dp.message(commands=["start", "help"])
+@dp.message(Command(commands=["start", "help"]))
 async def send_welcome(message: types.Message):
     await message.answer(
         "Привет! Задайте мне вопрос — я подскажу, кто из сотрудников может помочь по теме. "
