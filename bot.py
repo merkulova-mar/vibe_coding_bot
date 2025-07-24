@@ -3,6 +3,7 @@ from aiogram import Bot, Dispatcher, types
 import pymorphy2
 import asyncio
 import os
+os.environ["PYMORPHY2_DICT_PATH"] = "/app/.venv/lib/python3.11/site-packages/pymorphy2_dicts_ru"
 
 # Получаем токен из переменной окружения
 API_TOKEN = os.getenv("API_TOKEN")
