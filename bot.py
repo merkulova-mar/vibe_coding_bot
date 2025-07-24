@@ -64,6 +64,13 @@ async def find_expert(message: types.Message):
             response += f"- {person.title()} ({MENTIONS.get(person, person)})\n"
         await message.answer(response)
 
+@dp.message()
+async def get_photo_id(message: types.Message):
+    if message.photo:
+        await message.answer(f"file_id: {message.photo[-1].file_id}")
+    else:
+        await message.answer("Пожалуйста, отправьте фото.")
+
 async def main():
     await dp.start_polling(bot)
 
