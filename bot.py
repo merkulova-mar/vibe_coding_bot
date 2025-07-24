@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, types
 import pymorphy2
 import asyncio
 import os
-from aiogram.filters import Command
+from aiogram.filters import Command, Text, Filter
 
 # Получаем токен из переменной окружения
 API_TOKEN = os.getenv("API_TOKEN")
@@ -46,7 +46,7 @@ async def send_welcome(message: types.Message):
         + '\n'.join(f"— {p.title()}: {', '.join(KEYWORDS[p])}" for p in KEYWORDS)
     )
 
-@dp.message()
+@dp.message(Text())
 async def find_expert(message: types.Message):
     if not message.text:
         return  # Игнорируем не-текстовые сообщения
@@ -65,12 +65,13 @@ async def find_expert(message: types.Message):
             response += f"- {person.title()} ({MENTIONS.get(person, person)})\n"
         await message.answer(response)
 
-@dp.message()
+class HasPhoto(Filter):
+    async def __call__(self, message: types.Message) -> bool:
+        return bool(message.photo)
+
+@dp.message(HasPhoto())
 async def get_photo_id(message: types.Message):
-    if message.photo:
-        await message.answer(f"file_id: {message.photo[-1].file_id}")
-    else:
-        await message.answer("Пожалуйста, отправьте фото.")
+    await message.answer(f"file_id: {message.photo[-1].file_id}")
 
 async def main():
     await dp.start_polling(bot)
