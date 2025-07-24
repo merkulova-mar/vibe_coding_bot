@@ -19,7 +19,25 @@ KEYWORDS = {
 MENTIONS = {
     "иван": "@ivan_username",
     "оля": "@olga_username",
-    "мария": "@maria_username"
+    "мария": "@maria_username",
+    "ксения": "@ksenia_username",
+    "евгения": "@evgenia_username",
+    "дмитрий": "@dmitry_username",
+    "инесса": "@inessa_username",
+    "изабелла": "@izabella_username",
+    "канат": "@kanat_username"
+}
+
+PHOTOS = {
+    "иван": "",  # сюда можно добавить file_id позже
+    "оля": "",
+    "мария": "",
+    "ксения": "AgACAgIAAxkBAAMYaIJCTP_J4j6fWK_hmLZDiyH-vqYAAp_0MRsOLRhI7tpiaRD7stoBAAMCAAN4AAM2BA",
+    "евгения": "AgACAgIAAxkBAAMbaIJEvq4Ofk-qeSAb15dFkD1_JUMAAqD0MRsOLRhIjpySg4RAbYABAAMCAAN4AAM2BA",
+    "дмитрий": "AgACAgIAAxkBAAMdaIJFJRPLodBKt8ttOklnsjpK4KUAAqH0MRsOLRhIb0u6Yj7h5GYBAAMCAAN4AAM2BA",
+    "инесса": "AgACAgIAAxkBAAMfaIJFMZFDMiLJ3ubZJzg7SOUjoTAAAqL0MRsOLRhIkKU_j7KCWjABAAMCAAN4AAM2BA",
+    "изабелла": "AgACAgIAAxkBAAMhaIJFQTXIQjp1PnbSYJ8t9fQDM0oAAqP0MRsOLRhI3X5T5vgm_X0BAAMCAAN4AAM2BA",
+    "канат": "AgACAgIAAxkBAAMLaIJAY25KLoByqupVgS8mCBra6lMAAhf0MRusUhFIYddKCGwWd80BAAMCAAN4AAM2BA"
 }
 
 morph = pymorphy2.MorphAnalyzer(lang='ru')
@@ -60,18 +78,13 @@ async def find_expert(message: types.Message):
     if not found:
         await message.answer("Не нашёл подходящего специалиста. Попробуйте переформулировать вопрос.")
     else:
-        response = "Вот, кто может помочь:\n"
         for person in found:
-            response += f"- {person.title()} ({MENTIONS.get(person, person)})\n"
-        await message.answer(response)
-
-class HasPhoto(Filter):
-    async def __call__(self, message: types.Message) -> bool:
-        return bool(message.photo)
-
-@dp.message(HasPhoto())
-async def get_photo_id(message: types.Message):
-    await message.answer(f"file_id: {message.photo[-1].file_id}")
+            caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь вам!"
+            photo = PHOTOS.get(person)
+            if photo:
+                await message.answer_photo(photo, caption=caption)
+            else:
+                await message.answer(caption)
 
 async def main():
     await dp.start_polling(bot)
