@@ -48,7 +48,8 @@ async def send_welcome(message: types.Message):
 
 @dp.message()
 async def find_expert(message: types.Message):
-    # Регулярка ловит слова, игнорируя знаки пунктуации
+    if not message.text:
+        return  # Игнорируем не-текстовые сообщения
     text = message.text.lower()
     words = re.findall(r'\w+', text, re.UNICODE)
     norm_words = [normalize_word(w) for w in words]
