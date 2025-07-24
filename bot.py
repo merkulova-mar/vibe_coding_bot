@@ -2,9 +2,10 @@ import re
 from aiogram import Bot, Dispatcher, types
 import pymorphy2
 import asyncio
+import os
 
-# ВСТАВЬТЕ сюда свой токен, выданный BotFather
-API_TOKEN = "ВАШ_ТОКЕН_ТУТ"
+# Получаем токен из переменной окружения
+API_TOKEN = os.getenv("API_TOKEN")
 
 # Словарь сотрудников и их ключевых слов (будут нормализованы)
 KEYWORDS = {
