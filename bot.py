@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, types
 import pymorphy2
 import asyncio
 import os
-from aiogram.filters import Command, Text, Filter
+from aiogram.filters import Command, Filter
 
 # Получаем токен из переменной окружения
 API_TOKEN = os.getenv("API_TOKEN")
@@ -46,7 +46,7 @@ async def send_welcome(message: types.Message):
         + '\n'.join(f"— {p.title()}: {', '.join(KEYWORDS[p])}" for p in KEYWORDS)
     )
 
-@dp.message(Text())
+@dp.message(lambda message: message.text is not None)
 async def find_expert(message: types.Message):
     if not message.text:
         return  # Игнорируем не-текстовые сообщения
