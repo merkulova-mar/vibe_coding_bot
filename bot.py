@@ -31,6 +31,7 @@ KEYWORDS = {
     ], 
 }
 
+
 # Маппинг для упоминаний — впишите реальные username через @
 MENTIONS = {
     "ксения": "@kseniiathe",
@@ -137,7 +138,7 @@ async def find_expert(message: types.Message):
                 person = person_key
                 break
     if not person:
-        await message.answer("Наши аналитики великолепны но не все могущи, пожалуйста обратитесь с этим в другую команду.")
+        await message.answer("Я не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
     else:
         link = links.get(person)
         caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь тебе!"
@@ -154,4 +155,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
