@@ -86,7 +86,7 @@ dp = Dispatcher()
 async def send_welcome(message: types.Message):
     await message.answer(
         "Привет! Задай мне вопрос — я подскажу, кто из сотрудников может помочь по теме. "
-        "\n Пример: 'Кто может помочь с вопросом по продажам b2b?'"
+        "Пример: 'Кто может помочь с вопросом по продажам b2b?'"
     )
 
 @dp.message(lambda message: message.text is not None)
@@ -111,7 +111,7 @@ async def find_expert(message: types.Message):
         for dept in analytic_depts:
             dept_phrases = NORMALIZED_KEYWORDS.get(dept, [])
             if any(phrase in norm_text for phrase in dept_phrases):
-                await message.answer(f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадайте свой вопрос в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications")
+                await message.answer(f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications")
                 return
         person = None
         for person_key, norm_phrases in NORMALIZED_KEYWORDS.items():
@@ -121,10 +121,10 @@ async def find_expert(message: types.Message):
                 person = person_key
                 break
     if not person:
-        await message.answer("Не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
+        await message.answer("Я не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
     else:
         link = links.get(person)
-        caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь вам!"
+        caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь тебе!"
         if link:
             caption += f"\nПрофиль: {link}"
         photo = PHOTOS.get(person)
