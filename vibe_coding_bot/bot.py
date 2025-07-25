@@ -20,7 +20,7 @@ KEYWORDS = {
         "маркетинговая аналитика", "канал привлечения", "трафик", "конверсия", "фритрек",
         "конверсия в регистрацию", "рекламные кампании", "cpa", "cpc", "cpm", "roi маркетинга",
         "атрибуция", "первый клик", "последний клик", "cac", "эффективность креативов",
-        "воронка привлечения", "attribution", "атрибуция", "аквизитион"
+        "воронка привлечения", "attribution", "атрибуция", "аквизитион", ""
     ],
     "пользовательский опыт": ["трудоустройство", "доходимость", "спринты"],
     "bi и моделирования": [
@@ -137,7 +137,7 @@ async def find_expert(message: types.Message):
                 person = person_key
                 break
     if not person:
-        await message.answer("Наши аналитики великолепны но не все могущи, пожалуйста обратитесь с этим в другую команду.")
+        await message.answer("Я не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
     else:
         link = links.get(person)
         caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь тебе!"
