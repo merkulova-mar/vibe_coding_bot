@@ -78,35 +78,46 @@ async def find_expert(message: types.Message):
     text = message.text.lower()
     words = re.findall(r'\w+', text, re.UNICODE)
     norm_words = [normalize_word(w) for w in words]
-    found = set()
 
-    # Приоритетная логика для "английский" и "привлечение"
+    # Ключевые сотрудники-отделы
+    analytic_depts = ["привлечение", "пользовательский опыт", "bi и моделирования"]
+    # Проверка на "английский"
     has_english = "английский" in norm_words
+    # Ключевые слова для "привлечение"
     attraction_keywords = set(normalize_word(w.lower()) for w in KEYWORDS.get("привлечение", []))
     has_attraction = any(w in norm_words for w in attraction_keywords)
 
-    if has_english and has_attraction:
-        found.add("ксения")
-    elif has_english and not has_attraction:
-        found.add("канат")
-
-    # Обычная логика для остальных сотрудников
-    for w in norm_words:
-        if w in word_to_person:
-            found.add(word_to_person[w])
-    if not found:
+    # 1. Если "привлечение" и "английский" — Ксения
+    if has_attraction and has_english:
+        person = "ксения"
+    # 2. Если не "привлечение", но есть "английский" — Канат
+    elif has_english:
+        person = "канат"
+    else:
+        # 3. Проверяем, относится ли вопрос к аналитическим отделам
+        for dept in analytic_depts:
+            dept_keywords = set(normalize_word(w.lower()) for w in KEYWORDS.get(dept, []))
+            if any(w in norm_words for w in dept_keywords):
+                await message.answer(f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадайте свой вопрос в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications")
+                return
+        # 4. Обычный поиск по ключевым словам (только первого найденного сотрудника)
+        person = None
+        for w in norm_words:
+            if w in word_to_person:
+                person = word_to_person[w]
+                break
+    if not person:
         await message.answer("Не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
     else:
-        for person in found:
-            link = links.get(person)
-            caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь вам!"
-            if link:
-                caption += f"\nПрофиль: {link}"
-            photo = PHOTOS.get(person)
-            if photo:
-                await message.answer_photo(photo, caption=caption)
-            else:
-                await message.answer(caption)
+        link = links.get(person)
+        caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь вам!"
+        if link:
+            caption += f"\nПрофиль: {link}"
+        photo = PHOTOS.get(person)
+        if photo:
+            await message.answer_photo(photo, caption=caption)
+        else:
+            await message.answer(caption)
 
 async def main():
     await dp.start_polling(bot)
