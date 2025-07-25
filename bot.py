@@ -161,16 +161,3 @@ async def find_expert(message: types.Message):
             await message.answer_photo(photo, caption=caption)
         else:
             await message.answer(caption)
-
-@dp.message(lambda message: message.photo)
-async def handle_photo(message: types.Message):
-    # Получаем наибольшее по размеру фото
-    photo = message.photo[-1]
-    file_id = photo.file_id
-    await message.answer(f"Спасибо за фото! file_id этой картинки: {file_id}")
-
-async def main():
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
