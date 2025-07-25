@@ -79,6 +79,15 @@ for person, words in KEYWORDS.items():
         norm = normalize_word(w.lower())
         word_to_person[norm] = person
 
+# Список неаналитических ключевых слов
+NOT_ANALYTICS_KEYWORDS = [
+    "разметка страниц", "интеграция", "я-форма", "отпуск", "командировка", "больничный", "канцелярия", "ремонт", "доставка", "обед",
+    "чай", "кофе", "питание", "пропуск", "безопасность", "уборка", "мебель", "оргтехника", "it поддержка", "транспорт",
+    "переезд", "корпоратив", "праздник", "подарок", "мероприятие", "страховка", "медосмотр", "документы", "печать", "подпись",
+    "юрист", "аренда", "интернет", "связь", "курьер", "логистика", "склад", "инвентаризация", "закупка", "снабжение",
+    "договор", "счет", "оплата", "касса", "банк", "карта", "парковка", "охрана", "уборщица", "сантехник"
+]
+
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
@@ -97,6 +106,13 @@ async def find_expert(message: types.Message):
     words = re.findall(r'\w+', text, re.UNICODE)
     norm_words = [normalize_word(w) for w in words]
     norm_text = ' '.join(norm_words)
+
+    # Проверка на неаналитические ключевые слова
+    for phrase in NOT_ANALYTICS_KEYWORDS:
+        phrase_words = [normalize_word(w) for w in re.findall(r'\w+', phrase.lower(), re.UNICODE)]
+        if all(w in norm_words for w in phrase_words):
+            await message.answer("Наши аналитики великолепны, но не всемогущи. Возможно вам поможет разработка")
+            return
 
     analytic_depts = ["привлечение", "пользовательский опыт", "bi и моделирования"]
     has_english = "английский" in norm_words
