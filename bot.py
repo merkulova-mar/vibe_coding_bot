@@ -8,6 +8,17 @@ from aiogram.filters import Command, Filter
 # Получаем токен из переменной окружения
 API_TOKEN = os.getenv("API_TOKEN")
 
+--
+from aiogram import types
+
+@dp.message(lambda message: message.photo)
+async def handle_photo(message: types.Message):
+    # Получаем наибольшее по размеру фото
+    photo = message.photo[-1]
+    file_id = photo.file_id
+    await message.answer(f"Спасибо за фото! file_id этой картинки: {file_id}")
+    --
+
 # Словарь сотрудников и их ключевых слов (будут нормализованы)
 KEYWORDS = {
     "ксения": ["flow", "английский", "upskill", "сквозная английского", "funnel by channel", "маркетинг английский"],
