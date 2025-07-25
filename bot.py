@@ -49,8 +49,14 @@ PHOTOS = {
     "инесса": "AgACAgIAAxkBAAMfaIJFMZFDMiLJ3ubZJzg7SOUjoTAAAqL0MRsOLRhIkKU_j7KCWjABAAMCAAN4AAM2BA",
     "изабелла": "AgACAgIAAxkBAAMhaIJFQTXIQjp1PnbSYJ8t9fQDM0oAAqP0MRsOLRhI3X5T5vgm_X0BAAMCAAN4AAM2BA",
     "канат": "AgACAgIAAxkBAAMLaIJAY25KLoByqupVgS8mCBra6lMAAhf0MRusUhFIYddKCGwWd80BAAMCAAN4AAM2BA",
-    "привлечение": "AgACAgIAAxkBAAOHaIN5W1jgZxHllhg0TL4ELUpQLFEAAlv0MRsqBSBIw6MyTWZ9b2IBAAMCAAN5AAM2BA",
-    "bi и моделирования": "AgACAgIAAxkBAAOSaIN9cuZvzub40VNGCY5qAoI1OB4AAnT0MRsqBSBI1197h6zuWf0BAAMCAAN5AAM2BA"
+    "привлечение": [
+        "AgACAgIAAxkBAAOHaIN5W1jgZxHllhg0TL4ELUpQLFEAAlv0MRsqBSBIw6MyTWZ9b2IBAAMCAAN5AAM2BA",
+        "AgACAgIAAxkBAAOHaIN5W1jgZxHllhg0TL4ELUpQLFEAAlv0MRsqBSBIw6MyTWZ9b2IBAAMCAAN5AAM2BA"
+    ],
+    "bi и моделирования": [
+        "AgACAgIAAxkBAAOSaIN9cuZvzub40VNGCY5qAoI1OB4AAnT0MRsqBSBI1197h6zuWf0BAAMCAAN5AAM2BA",
+        "AgACAgIAAxkBAAOzaIOFvTyqOmFYflQGmkhlAnLhdU0AArL0MRsqBSBIZirkBEM7JVoBAAMCAAN5AAM2BA"
+    ]
 }
 
 links = {
@@ -141,8 +147,9 @@ async def find_expert(message: types.Message):
             if any(phrase in norm_text for phrase in dept_phrases):
                 photo = PHOTOS.get(dept)
                 text = f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications"
-                photo = PHOTOS.get(dept)
                 if photo:
+                    if dept in ["привлечение", "bi и моделирования"] and isinstance(photo, list):
+                        photo = random.choice(photo)
                     await message.answer_photo(photo, caption=text)
                 else:
                     await message.answer(text)
