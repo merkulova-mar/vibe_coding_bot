@@ -17,7 +17,7 @@ KEYWORDS = {
     "изабелла": ["crm", "срм", "рассылки"],
     "дмитрий": ["amo", "кураторская", "отдел продаж", "квалифицированный лид"],
     "привлечение": [
-        "маркетинговая аналитика", "каналы привлечения", "трафик", "конверсия", "фритрек",
+        "маркетинговая аналитика", "канал привлечения", "трафик", "конверсия", "фритрек",
         "конверсия в регистрацию", "рекламные кампании", "cpa", "cpc", "cpm", "roi маркетинга",
         "атрибуция", "первый клик", "последний клик", "cac", "эффективность креативов",
         "воронка привлечения", "attribution", "атрибуция", "аквизитион"
@@ -64,6 +64,14 @@ morph = pymorphy2.MorphAnalyzer(lang='ru')
 def normalize_word(word):
     return morph.parse(word)[0].normal_form
 
+def normalize_phrase(phrase):
+    return ' '.join([normalize_word(w) for w in re.findall(r'\w+', phrase.lower(), re.UNICODE)])
+
+NORMALIZED_KEYWORDS = {
+    person: [normalize_phrase(phrase) for phrase in phrases]
+    for person, phrases in KEYWORDS.items()
+}
+
 # Подготовим обратный индекс: нормальная форма слова -> сотрудник
 word_to_person = {}
 for person, words in KEYWORDS.items():
@@ -88,33 +96,29 @@ async def find_expert(message: types.Message):
     text = message.text.lower()
     words = re.findall(r'\w+', text, re.UNICODE)
     norm_words = [normalize_word(w) for w in words]
+    norm_text = ' '.join(norm_words)
 
-    # Ключевые сотрудники-отделы
     analytic_depts = ["привлечение", "пользовательский опыт", "bi и моделирования"]
-    # Проверка на "английский"
     has_english = "английский" in norm_words
-    # Ключевые слова для "привлечение"
-    attraction_keywords = set(normalize_word(w.lower()) for w in KEYWORDS.get("привлечение", []))
-    has_attraction = any(w in norm_words for w in attraction_keywords)
+    attraction_phrases = NORMALIZED_KEYWORDS.get("привлечение", [])
+    has_attraction = any(phrase in norm_text for phrase in attraction_phrases)
 
-    # 1. Если "привлечение" и "английский" — Ксения
     if has_attraction and has_english:
         person = "ксения"
-    # 2. Если не "привлечение", но есть "английский" — Канат
     elif has_english:
         person = "канат"
     else:
-        # 3. Проверяем, относится ли вопрос к аналитическим отделам
         for dept in analytic_depts:
-            dept_keywords = set(normalize_word(w.lower()) for w in KEYWORDS.get(dept, []))
-            if any(w in norm_words for w in dept_keywords):
+            dept_phrases = NORMALIZED_KEYWORDS.get(dept, [])
+            if any(phrase in norm_text for phrase in dept_phrases):
                 await message.answer(f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадайте свой вопрос в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications")
                 return
-        # 4. Обычный поиск по ключевым словам (только первого найденного сотрудника)
         person = None
-        for w in norm_words:
-            if w in word_to_person:
-                person = word_to_person[w]
+        for person_key, norm_phrases in NORMALIZED_KEYWORDS.items():
+            if person_key in analytic_depts:
+                continue
+            if any(phrase in norm_text for phrase in norm_phrases):
+                person = person_key
                 break
     if not person:
         await message.answer("Не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
