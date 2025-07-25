@@ -56,6 +56,9 @@ PHOTOS = {
     "bi и моделирования": [
         "AgACAgIAAxkBAAOSaIN9cuZvzub40VNGCY5qAoI1OB4AAnT0MRsqBSBI1197h6zuWf0BAAMCAAN5AAM2BA",
         "AgACAgIAAxkBAAOzaIOFvTyqOmFYflQGmkhlAnLhdU0AArL0MRsqBSBIZirkBEM7JVoBAAMCAAN5AAM2BA"
+    ],
+    "пользовательский опыт": [
+        "AgACAgIAAxkBAAPoaIOSmklzvzEt7-LMASrk1lgPr14AAkP3MRsuziBIzGuK_KK4kCYBAAMCAAN5AAM2BA"
     ]
 }
 
@@ -148,7 +151,7 @@ async def find_expert(message: types.Message):
                 photo = PHOTOS.get(dept)
                 text = f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications"
                 if photo:
-                    if dept in ["привлечение", "bi и моделирования"] and isinstance(photo, list):
+                    if dept in ["привлечение", "bi и моделирования","пользовательский опыт"] and isinstance(photo, list):
                         photo = random.choice(photo)
                     await message.answer_photo(photo, caption=text)
                 else:
