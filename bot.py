@@ -141,9 +141,9 @@ async def find_expert(message: types.Message):
             if any(phrase in norm_text for phrase in dept_phrases):
                 photo = PHOTOS.get(dept)
                 text = f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications"
+                photo = PHOTOS.get(dept)
                 if photo:
-                    await message.answer(text)
-                    await message.answer_photo(photo)
+                    await message.answer_photo(photo, caption=text)
                 else:
                     await message.answer(text)
                 return
