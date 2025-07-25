@@ -169,7 +169,7 @@ async def find_expert(message: types.Message):
         await message.answer_photo("AgACAgIAAxkBAAOeaIOAGDKIjkAgZoweLFXPLQKWCtgAAnj5MRvKQiBI6iilAUx2Rp4BAAMCAANtAAM2BA")
     else:
         link = links.get(person)
-        caption = f"Твой аналитик {person.title()} ({MENTIONS.get(person, person)})! Он готов помочь тебе!"
+        caption = f"Твой аналитик {person.title()} ({MENTIONS.get(person, person)})! Мы всегда готовы помочь тебе!"
         if link:
             caption += f"\nПрофиль: {link}"
         photo = PHOTOS.get(person)
