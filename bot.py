@@ -139,7 +139,13 @@ async def find_expert(message: types.Message):
         for dept in analytic_depts:
             dept_phrases = NORMALIZED_KEYWORDS.get(dept, [])
             if any(phrase in norm_text for phrase in dept_phrases):
-                await message.answer(f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications")
+                photo = PHOTOS.get(dept)
+                text = f"Этот вопрос относится к отделу аналитики — {dept.title()}\nЗадай свой вопрос в канале \nhttps://mattermost.practicum.yandex/practicum/channels/analytics_communications"
+                if photo:
+                    await message.answer(text)
+                    await message.answer_photo(photo)
+                else:
+                    await message.answer(text)
                 return
         person = None
         for person_key, norm_phrases in NORMALIZED_KEYWORDS.items():
@@ -149,10 +155,8 @@ async def find_expert(message: types.Message):
                 person = person_key
                 break
     if not person:
-        await message.answer_photo(
-            "AgACAgIAAxkBAAOeaIOAGDKIjkAgZoweLFXPLQKWCtgAAnj5MRvKQiBI6iilAUx2Rp4BAAMCAANtAAM2BA",
-            caption="Я не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications."
-        )
+        await message.answer("Я не нашёл подходящего специалиста. Попробуй переформулировать вопрос или спроси в канале https://mattermost.practicum.yandex/practicum/channels/analytics_communications.")
+        await message.answer_photo("AgACAgIAAxkBAAOeaIOAGDKIjkAgZoweLFXPLQKWCtgAAnj5MRvKQiBI6iilAUx2Rp4BAAMCAANtAAM2BA")
     else:
         link = links.get(person)
         caption = f"{person.title()} ({MENTIONS.get(person, person)}) может помочь тебе!"
